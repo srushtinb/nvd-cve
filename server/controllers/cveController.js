@@ -1,55 +1,59 @@
-const CVE = require('../models/CVE');
+// server/controllers/cveController.js
+const CVE = require("../models/CVE");
 
-exports.listCVEs = async (req, res) => {
+exports.getList = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || '';
+    const skip = (page - 1) * limit;
 
-    let query = {};
-    if (search) query.cveId = { $regex: search, $options: 'i' };
+    const filter = {};
 
-    const total = await CVE.countDocuments(query);
+    if (req.query.cveId) {
+      filter.cveId = new RegExp(req.query.cveId, "i");
+    }
+    if (req.query.year) {
+      const y = parseInt(req.query.year);
+      filter.published = {
+        $gte: new Date(`${y}-01-01`),
+        $lt: new Date(`${y + 1}-01-01`),
+      };
+    }
+    if (req.query.score) {
+      filter.baseScore = { $gte: parseFloat(req.query.score) };
+    }
+    if (req.query.days) {
+      const date = new Date();
+      date.setDate(date.getDate() - parseInt(req.query.days));
+      filter.lastModified = { $gte: date };
+    }
 
-    const cves = await CVE.find(query)
-      .select('cveId sourceIdentifier publishedDate lastModifiedDate vulnStatus')
-      .sort({ publishedDate: -1 })
-      .skip((page - 1) * limit)
+    const total = await CVE.countDocuments(filter);
+    const cves = await CVE.find(filter)
+      .sort({ lastModified: -1 })
+      .skip(skip)
       .limit(limit)
-      .lean(); // Fast query
+      .lean(); // ← This makes it faster
 
     res.json({
-      totalRecords: total,
-      cves: cves.map(c => ({
-        cveId: c.cveId,
-        sourceIdentifier: c.sourceIdentifier || 'cve@mitre.org',
-        publishedDate: c.publishedDate.toISOString().split('T')[0],
-        lastModifiedDate: c.lastModifiedDate.toISOString().split('T')[0],
-        vulnStatus: c.vulnStatus
-      }))
+      cves,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
     });
-  } catch (e) {
-    res.status(500).json({ error: 'Server error' });
+  } catch (err) {
+    console.error("Error in getList:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-exports.getCVE = async (req, res) => {
+exports.getById = async (req, res) => {
   try {
-    const cve = await CVE.findOne({ cveId: req.params.id }).lean();
-    if (!cve) return res.status(404).json({ error: 'Not found' });
-    res.json({
-      cveId: cve.cveId,
-      sourceIdentifier: cve.sourceIdentifier || 'cve@mitre.org',
-      publishedDate: cve.publishedDate.toISOString().split('T')[0],
-      lastModifiedDate: cve.lastModifiedDate.toISOString().split('T')[0],
-      vulnStatus: cve.vulnStatus,
-      description: cve.description || 'No description',
-      cvssV3Score: cve.cvssV3Score,
-      cvssV2Score: cve.cvssV2Score,
-      references: cve.references || [],
-      year: cve.year
-    });
-  } catch (e) {
-    res.status(500).json({ error: 'Server error' });
+    const cve = await CVE.findOne({ cveId: req.params.id });
+    if (!cve) return res.status(404).json({ error: "CVE not found" });
+    res.json(cve);
+  } catch (err) {
+    console.error("Error in getById:", err);
+    res.status(500).json({ error: "Server error" });
   }
 };

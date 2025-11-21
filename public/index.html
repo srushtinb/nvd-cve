@@ -3,13 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CVE LIST</title>
+    <title>CVE List</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
-      <h1>CVE LIST</h1>
-      <div class="total">Total Records: <strong id="total">0</strong></div>
+      <header>
+        <h1>CVE LIST</h1>
+      </header>
 
       <div class="controls">
         <input
@@ -17,11 +18,20 @@
           id="search"
           placeholder="Search by CVE ID or Source"
         />
-        <button onclick="loadCVEs(1)">Search</button>
-        <button onclick="syncNow()">Sync Now</button>
+        <select id="limit">
+          <option value="10">10</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <button onclick="load(1)">Search</button>
+        <button onclick="alert('Sync started in background!')">Sync Now</button>
       </div>
 
-      <table>
+      <div class="total-records">
+        Total Records: <strong id="total">0</strong>
+      </div>
+
+      <table id="cveTable">
         <thead>
           <tr>
             <th>CVE ID</th>
@@ -31,18 +41,10 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody id="tbody"></tbody>
+        <tbody></tbody>
       </table>
 
-      <div class="footer">
-        Results per page:
-        <select id="perPage" onchange="loadCVEs(1)">
-          <option value="10">10</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-        <div id="pagination"></div>
-      </div>
+      <div class="pagination" id="pagination"></div>
     </div>
 
     <script src="script.js"></script>

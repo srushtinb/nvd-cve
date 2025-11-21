@@ -1,15 +1,17 @@
+// server/models/CVE.js
 const mongoose = require("mongoose");
 
 const cveSchema = new mongoose.Schema({
   cveId: { type: String, required: true, unique: true },
   sourceIdentifier: String,
-  publishedDate: Date,
-  lastModifiedDate: Date,
+  published: Date,
+  lastModified: Date,
   vulnStatus: String,
   description: String,
-  cvssV3Score: Number,
-  cvssV2Score: Number,
-  year: Number,
+  baseScore: Number,
+  baseSeverity: String,
+  references: [String],
+  configurations: [String],
 });
 
 module.exports = mongoose.model("CVE", cveSchema);

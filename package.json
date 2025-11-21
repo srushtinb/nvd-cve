@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "sync": "node server/sync/syncCVEs.js"
+    "dev": "nodemon index.js",
+    "sync": "node server/sync/syncCVE.js",
+    "clean": "node server/sync/cleanCVE.js"
   },
   "keywords": [],
   "author": "",

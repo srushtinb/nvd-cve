@@ -1,8 +1,9 @@
-const express = require('express');
+// server/routes/cveRoutes.js
+const express = require("express");
 const router = express.Router();
-const { listCVEs, getCVE } = require('../controllers/cveController');
+const controller = require("../controllers/cveController");
 
-router.get('/list', listCVEs);
-router.get('/:id', getCVE);
+router.get("/list", controller.getList);
+router.get("/:id", controller.getById);
 
 module.exports = router;
