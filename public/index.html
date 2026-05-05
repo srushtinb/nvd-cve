@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CVE List</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>CVE LIST</h1>
+      </header>
+
+      <div class="controls">
+        <input
+          type="text"
+          id="search"
+          placeholder="Search by CVE ID or Source"
+        />
+        <select id="limit">
+          <option value="10">10</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <button onclick="load(1)">Search</button>
+        <button onclick="alert('Sync started in background!')">Sync Now</button>
+      </div>
+
+      <div class="total-records">
+        Total Records: <strong id="total">0</strong>
+      </div>
+
+      <table id="cveTable">
+        <thead>
+          <tr>
+            <th>CVE ID</th>
+            <th>Source</th>
+            <th>Published Date</th>
+            <th>Last Modified Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

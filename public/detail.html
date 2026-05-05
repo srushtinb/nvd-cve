@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CVE Detail</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: bold;
+      }
+      .status-modified {
+        background: #059669;
+        color: white;
+      }
+      .status-analyzed {
+        background: #dc2626;
+        color: white;
+      }
+      .vuln-badge {
+        background: #dc2626;
+        color: white;
+      }
+      .cpe-box {
+        background: #fef2f2;
+        padding: 14px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border-left: 5px solid #dc2626;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: monospace;
+      }
+      .ref-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
+      .ref-table a {
+        color: #1e40af;
+        text-decoration: none;
+      }
+      .ref-table a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" style="max-width: 1000px; margin: 40px auto">
+      <!-- Blue Header -->
+      <div
+        style="
+          background: #1e40af;
+          color: white;
+          padding: 25px;
+          text-align: center;
+          border-radius: 12px 12px 0 0;
+        "
+      >
+        <h1
+          id="cveId"
+          style="font-size: 2.8rem; margin: 0; letter-spacing: 1px"
+        >
+          CVE-XXXX-XXXX
+        </h1>
+      </div>
+
+      <div
+        style="
+          background: white;
+          padding: 30px;
+          border: 1px solid #e2e8f0;
+          border-top: none;
+          border-radius: 0 0 12px 12px;
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        "
+      >
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+          "
+        >
+          <div>
+            <strong>Source:</strong> <span id="source">cve@mitre.org</span>
+          </div>
+          <div><strong>Published:</strong> <span id="published">-</span></div>
+          <div>
+            <strong>Last Modified:</strong> <span id="lastModified">-</span>
+          </div>
+          <div>
+            <strong>Status:</strong>
+            <span id="status" class="badge status-modified">Modified</span>
+          </div>
+        </div>
+
+        <div
+          style="
+            padding: 15px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            margin-bottom: 30px;
+          "
+        >
+          <strong>CVSS Score:</strong>
+          <span
+            id="score"
+            style="font-size: 1.4rem; color: #dc2626; font-weight: bold"
+            >N/A</span
+          >
+          <span id="severity" style="margin-left: 10px; color: #dc2626"
+            >(NONE)</span
+          >
+        </div>
+
+        <!-- Description -->
+        <h2
+          style="
+            color: #1e40af;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin: 40px 0 20px;
+          "
+        >
+          Description
+        </h2>
+        <div
+          style="
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.8;
+            font-size: 1.05rem;
+          "
+        >
+          <p id="description">Loading...</p>
+        </div>
+
+        <!-- References -->
+        <h2
+          style="
+            color: #1e40af;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin: 40px 0 20px;
+          "
+        >
+          References
+        </h2>
+        <table class="ref-table" style="width: 100%; border-collapse: collapse">
+          <tbody id="references">
+            <tr>
+              <td
+                colspan="2"
+                style="text-align: center; color: #999; padding: 30px"
+              >
+                Loading references...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Configurations -->
+        <h2
+          style="
+            color: #1e40af;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin: 40px 0 20px;
+          "
+        >
+          Affected Configurations
+        </h2>
+        <div id="configurations">
+          <p style="color: #999; font-style: italic">
+            Loading configurations...
+          </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px">
+          <a
+            href="/"
+            style="
+              color: #1e40af;
+              font-size: 1.1rem;
+              font-weight: 600;
+              text-decoration: none;
+            "
+          >
+            ← Back to CVE List
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const cveId = window.location.pathname.split("/").pop();
+      if (!cveId || !cveId.startsWith("CVE-")) {
+        document.body.innerHTML =
+          "<h1 style='text-align:center; margin:100px; color:#dc2626;'>Invalid CVE ID</h1>";
+        throw new Error("Invalid CVE");
+      }
+
+      document.getElementById("cveId").textContent = cveId;
+
+      fetch(`/api/cves/${cveId}`)
+        .then((r) => r.json())
+        .then((cve) => {
+          document.getElementById("source").textContent =
+            cve.sourceIdentifier || "cve@mitre.org";
+          document.getElementById("published").textContent = new Date(
+            cve.published
+          )
+            .toISOString()
+            .split("T")[0];
+          document.getElementById("lastModified").textContent = new Date(
+            cve.lastModified
+          )
+            .toISOString()
+            .split("T")[0];
+
+          const statusEl = document.getElementById("status");
+          statusEl.textContent = cve.vulnStatus || "Analyzed";
+          statusEl.className =
+            "badge " +
+            (cve.vulnStatus === "Modified"
+              ? "status-modified"
+              : "status-analyzed");
+
+          document.getElementById("score").textContent =
+            cve.baseScore !== undefined ? cve.baseScore : "N/A";
+          document.getElementById("severity").textContent = cve.baseSeverity
+            ? `(${cve.baseSeverity})`
+            : "(NONE)";
+          document.getElementById("description").textContent =
+            cve.description || "No description available.";
+
+          // References
+          const refsBody = document.getElementById("references");
+          if (cve.references && cve.references.length > 0) {
+            refsBody.innerHTML = cve.references
+              .map(
+                (url) => `
+            <tr>
+              <td><a href="${url}" target="_blank">${url}</a></td>
+              <td style="color:#666; text-align:right; width:180px;">${
+                new URL(url).hostname
+              }</td>
+            </tr>
+          `
+              )
+              .join("");
+          } else {
+            refsBody.innerHTML =
+              '<tr><td colspan="2" style="text-align:center; color:#999; padding:30px;">No references available</td></tr>';
+          }
+
+          // Configurations
+          const configDiv = document.getElementById("configurations");
+          if (cve.configurations && cve.configurations.length > 0) {
+            configDiv.innerHTML = cve.configurations
+              .map(
+                (cpe) => `
+            <div class="cpe-box">
+              <code>${cpe}</code>
+              <span class="vuln-badge">Vulnerable</span>
+            </div>
+          `
+              )
+              .join("");
+          } else {
+            configDiv.innerHTML =
+              '<p style="color:#999; font-style:italic;">No affected configurations found.</p>';
+          }
+        })
+        .catch((err) => {
+          document.querySelector(".container").innerHTML = `
+          <div style="text-align:center; padding:80px; color:#dc2626;">
+            <h2>CVE Not Found</h2>
+            <p>This CVE may not be synced yet.</p>
+            <a href="/" style="color:#1e40af;">← Back to List</a>
+          </div>
+        `;
+        });
+    </script>
+  </body>
+</html>
