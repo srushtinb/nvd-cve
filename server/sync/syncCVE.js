@@ -12,7 +12,7 @@ async function sync(fullSync = true, maxTotal = 50000) {
   console.log(
     fullSync
       ? "Full Sync Started (All CVEs, oldest first)..."
-      : "Recent Sync Started (2020+)..."
+      : "Recent Sync Started (2020+)...",
   );
 
   let startIndex = 0;
@@ -23,7 +23,7 @@ async function sync(fullSync = true, maxTotal = 50000) {
     console.log(
       `Fetching batch ${Math.floor(startIndex / limit) + 1}: ${startIndex} - ${
         startIndex + limit - 1
-      }`
+      }`,
     );
 
     try {
@@ -114,13 +114,13 @@ async function sync(fullSync = true, maxTotal = 50000) {
       console.log(
         `Saved ${items.length} CVEs (e.g., ${items[0].cve.id} to ${
           items[items.length - 1].cve.id
-        }) → Total: ${total}`
+        }) → Total: ${total}`,
       );
       startIndex += limit;
 
       if (total >= maxTotal) {
         console.log(
-          `Hit limit of ${maxTotal} – stopping. Run again with higher maxTotal for more.`
+          `Hit limit of ${maxTotal} – stopping. Run again with higher maxTotal for more.`,
         );
         break;
       }
@@ -140,11 +140,11 @@ async function sync(fullSync = true, maxTotal = 50000) {
   }
 
   console.log(
-    `SYNC FINISHED: ${total} CVEs stored (unique via upsert). Check DB: use mongo shell 'db.cves.countDocuments()'.`
+    `SYNC FINISHED: ${total} CVEs stored (unique via upsert). Check DB: use mongo shell 'db.cves.countDocuments()'.`,
   );
   mongoose.disconnect();
   process.exit(0);
 }
 
 // Run full sync by default (change to sync(false, 20000) for recent only)
-sync(true, 50000);
+sync(true, 100);

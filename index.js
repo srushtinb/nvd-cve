@@ -1,10 +1,13 @@
 require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
+const { exec } = require("child_process");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
@@ -18,20 +21,19 @@ mongoose
 // API Routes
 app.use("/api/cves", require("./server/routes/cveRoutes"));
 
-// ADD THIS ROUTE
+// SYNC ROUTE
 app.get("/sync", async (req, res) => {
-  try {
-    const response = await fetch(
-      "https://services.nvd.nist.gov/rest/json/cves/2.0?resultsPerPage=10",
-    );
+  exec("node server/sync/syncCVE.js", (error, stdout, stderr) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).send("Sync failed");
+    }
 
-    const data = await response.json();
+    console.log(stdout);
+    console.error(stderr);
 
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Sync failed");
-  }
+    res.send("CVE Sync Started Successfully");
+  });
 });
 
 // Detail page
