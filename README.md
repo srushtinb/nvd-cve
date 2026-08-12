@@ -43,7 +43,7 @@ CVE Sync Service ---> MongoDB
 Create a `.env` file:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/cve_dashboard
+MONGODB_URI=mongodb://localhost:27017/cvedb
 PORT=3000
 ```
 
